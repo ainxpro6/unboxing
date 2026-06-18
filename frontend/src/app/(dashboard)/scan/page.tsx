@@ -29,6 +29,7 @@ export default function ScanPage() {
   const [manualResi, setManualResi] = useState("");
   const [recordingTime, setRecordingTime] = useState(0);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [videoExtension, setVideoExtension] = useState("webm");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -102,7 +103,7 @@ export default function ScanPage() {
   }, []);
 
   // Upload and finish
-  const finishAndSave = useCallback(async (videoBlob?: Blob) => {
+  const finishAndSave = useCallback(async (videoBlob?: Blob, extension = "webm") => {
     const currentResi = receiptNumberRef.current;
 
     // Detect courier from receipt number prefix
@@ -133,6 +134,7 @@ export default function ScanPage() {
       courierName,
       statusBarang: "baik",
       videoDuration: recordingTimeRef.current,
+      videoExtension: extension,
     });
 
     setState("complete");
@@ -147,7 +149,7 @@ export default function ScanPage() {
         formData.append("photo", photoBlobRef.current, `${currentResi}_resi.jpg`);
       }
       if (videoBlob) {
-        formData.append("video", videoBlob, `${currentResi}_unboxing.webm`);
+        formData.append("video", videoBlob, `${currentResi}_unboxing.${extension}`);
       }
 
       fetch("/api/media/upload", {
@@ -169,9 +171,9 @@ export default function ScanPage() {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       mediaRecorderRef.current.stop();
     } else {
-      finishAndSave();
+      finishAndSave(undefined, videoExtension);
     }
-  }, [finishAndSave]);
+  }, [finishAndSave, videoExtension]);
 
   // Start recording
   const startRecording = useCallback(() => {
@@ -211,10 +213,24 @@ export default function ScanPage() {
           }, 800); // Wait a bit for video to be ready and focused
         }
 
+        let mimeType = "video/webm;codecs=vp8,opus";
+        let extension = "webm";
+
+        if (MediaRecorder.isTypeSupported("video/mp4;codecs=h264,aac")) {
+          mimeType = "video/mp4;codecs=h264,aac";
+          extension = "mp4";
+        } else if (MediaRecorder.isTypeSupported("video/mp4;codecs=avc1,mp4a")) {
+          mimeType = "video/mp4;codecs=avc1,mp4a";
+          extension = "mp4";
+        } else if (MediaRecorder.isTypeSupported("video/mp4")) {
+          mimeType = "video/mp4";
+          extension = "mp4";
+        }
+
+        setVideoExtension(extension);
+
         try {
-          const mediaRecorder = new MediaRecorder(stream, {
-            mimeType: 'video/webm;codecs=vp8,opus'
-          });
+          const mediaRecorder = new MediaRecorder(stream, { mimeType });
           mediaRecorderRef.current = mediaRecorder;
 
           mediaRecorder.ondataavailable = (e) => {
@@ -224,8 +240,8 @@ export default function ScanPage() {
           };
 
           mediaRecorder.onstop = () => {
-            const blob = new Blob(chunksRef.current, { type: "video/webm" });
-            finishAndSave(blob);
+            const blob = new Blob(chunksRef.current, { type: mimeType });
+            finishAndSave(blob, extension);
           };
 
           mediaRecorder.start(1000); // capture in chunks of 1 second
@@ -590,7 +606,7 @@ export default function ScanPage() {
 
                 {/* File name */}
                 <div className="absolute bottom-4 left-4 glass px-3 py-1.5 rounded-lg">
-                  <p className="text-xs font-mono text-foreground">{receiptNumber}_unboxing.mp4</p>
+                  <p className="text-xs font-mono text-foreground">{receiptNumber}_unboxing.{videoExtension}</p>
                 </div>
               </div>
             )}

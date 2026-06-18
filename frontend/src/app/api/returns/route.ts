@@ -70,6 +70,7 @@ export async function POST(request: NextRequest) {
     courierName,
     statusBarang = "baik",
     videoDuration = 0,
+    videoExtension = "webm",
   } = body;
 
   if (!receiptNumber || !courierName) {
@@ -96,7 +97,7 @@ export async function POST(request: NextRequest) {
     .insert(media)
     .values({
       returnId: newReturn.id,
-      videoLocalPath: `${receiptNumber}_unboxing.webm`,
+      videoLocalPath: `${receiptNumber}_unboxing.${videoExtension}`,
       photoLocalPath: `${receiptNumber}_resi.jpg`,
       uploadStatus: "pending",
       videoDuration,

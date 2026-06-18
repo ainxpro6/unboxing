@@ -23,6 +23,7 @@ interface ReturnStore {
     courierName: string;
     statusBarang: string;
     videoDuration: number;
+    videoExtension?: string;
   }) => Promise<ReturnItem | null>;
   getReturnById: (id: string) => ReturnItem | undefined;
   deleteReturn: (id: string) => Promise<void>;

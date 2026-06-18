@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (video) {
-      videoFileName = await uploadToSupabase(video, `${receiptNumber}_unboxing.webm`, "video/webm");
+      videoFileName = await uploadToSupabase(video, video.name, video.type);
     }
 
     // Update media record in DB if there are files
