@@ -60,9 +60,7 @@ export default function Header() {
         {/* Left: Page context */}
         <div className="flex items-center gap-3">
           <div className="lg:hidden">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">U</span>
-            </div>
+            <img src="/icon-512.png" alt="Logo" className="w-8 h-8 object-contain rounded-lg" />
           </div>
         </div>
 

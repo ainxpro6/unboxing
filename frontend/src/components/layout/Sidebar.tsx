@@ -8,7 +8,6 @@ import {
   History,
   Settings,
   HardDrive,
-  Package,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -38,9 +37,11 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 h-16 border-b border-border shrink-0">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
-          <Package className="w-5 h-5 text-white" />
-        </div>
+        <img
+          src="/icon-512.png"
+          alt="Logo"
+          className="w-9 h-9 object-contain rounded-xl shrink-0"
+        />
         <AnimatePresence>
           {!collapsed && (
             <motion.div
