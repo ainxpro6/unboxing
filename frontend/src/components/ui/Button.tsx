@@ -26,8 +26,8 @@ const variants = {
 const sizes = {
   sm: "px-3 py-1.5 text-xs rounded-lg gap-1.5",
   md: "px-4 py-2 text-sm rounded-xl gap-2",
-  lg: "px-5 py-2.5 text-sm rounded-xl gap-2",
-  xl: "px-6 py-3 text-base rounded-2xl gap-2.5",
+  lg: "px-4 py-2 text-xs sm:text-sm rounded-xl gap-1.5 sm:gap-2 sm:px-5 sm:py-2.5",
+  xl: "px-4 py-2.5 text-sm rounded-xl gap-2 sm:px-6 sm:py-3 sm:text-base sm:rounded-2xl sm:gap-2.5",
 };
 
 export default function Button({

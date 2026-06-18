@@ -411,7 +411,7 @@ export default function ScanPage() {
       >
         <div className="relative bg-card border border-border rounded-2xl overflow-hidden">
           {/* Camera View */}
-          <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
+          <div className="relative min-h-[360px] sm:aspect-[4/3] sm:min-h-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 overflow-hidden">
             {/* Scanner container for html5-qrcode (used during scanning state) */}
             <div
               ref={scannerContainerRef}
@@ -439,30 +439,30 @@ export default function ScanPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-6 p-6"
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 sm:gap-6 p-4 sm:p-6"
                 >
                   <div className="relative">
-                    <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-emerald-500/30">
-                      <ScanLine className="w-12 h-12 text-white" />
+                    <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl shadow-emerald-500/30">
+                      <ScanLine className="w-8 h-8 sm:w-12 sm:h-12 text-white" />
                     </div>
-                    <div className="absolute inset-0 w-24 h-24 rounded-3xl bg-emerald-500 pulse-ring" />
+                    <div className="absolute inset-0 w-16 h-16 sm:w-24 sm:h-24 rounded-3xl bg-emerald-500 pulse-ring" />
                   </div>
                   <div className="text-center">
-                    <h2 className="text-xl font-bold text-foreground mb-2">Siap Memindai</h2>
-                    <p className="text-sm text-muted-foreground max-w-sm">
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-1 sm:mb-2">Siap Memindai</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground max-w-xs break-words">
                       Arahkan barcode atau QR Code resi ke kamera untuk memulai proses dokumentasi otomatis
                     </p>
                   </div>
 
                   {cameraError && (
-                    <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-400 text-sm">
+                    <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/40 text-red-700 dark:text-red-400 text-xs sm:text-sm w-full">
                       <AlertCircle className="w-4 h-4 shrink-0" />
-                      {cameraError}
+                      <span className="break-words">{cameraError}</span>
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button size="xl" onClick={startCamera} icon={<Camera className="w-5 h-5" />}>
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                    <Button size="xl" onClick={startCamera} icon={<Camera className="w-5 h-5" />} className="w-full sm:w-auto justify-center">
                       Buka Kamera
                     </Button>
                     <Button
@@ -470,6 +470,7 @@ export default function ScanPage() {
                       variant="outline"
                       onClick={() => setManualInput(!manualInput)}
                       icon={<Keyboard className="w-5 h-5" />}
+                      className="w-full sm:w-auto justify-center"
                     >
                       Input Manual
                     </Button>
@@ -482,7 +483,7 @@ export default function ScanPage() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="w-full max-w-sm"
+                        className="w-full sm:max-w-sm"
                       >
                         <div className="flex gap-2">
                           <input
@@ -490,7 +491,7 @@ export default function ScanPage() {
                             value={manualResi}
                             onChange={(e) => setManualResi(e.target.value)}
                             placeholder="Masukkan nomor resi..."
-                            className="flex-1 px-4 py-2.5 text-sm bg-surface border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-foreground"
+                            className="flex-1 px-3 py-2 text-sm bg-surface border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-foreground"
                             onKeyDown={(e) => e.key === "Enter" && handleManualSubmit()}
                           />
                           <Button onClick={handleManualSubmit} disabled={manualResi.trim().length < 3}>
@@ -570,18 +571,18 @@ export default function ScanPage() {
             {state === "recording" && (
               <div className="absolute inset-0 z-10">
                 {/* Recording indicator */}
-                <div className="absolute top-4 left-4 glass px-4 py-2 rounded-full flex items-center gap-2">
-                  <div className="w-3 h-3 bg-red-500 rounded-full recording-dot" />
-                  <span className="text-sm font-bold text-red-600 dark:text-red-400 font-mono">REC</span>
+                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 glass px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full recording-dot" />
+                  <span className="text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 font-mono">REC</span>
                 </div>
 
                 {/* Timer */}
-                <div className="absolute top-4 right-4 glass px-4 py-2 rounded-full flex items-center gap-2">
-                  <Timer className="w-4 h-4 text-foreground" />
-                  <span className="text-sm font-bold text-foreground font-mono">
+                <div className="absolute top-2 right-2 sm:top-4 sm:right-4 glass px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full flex items-center gap-1.5 sm:gap-2">
+                  <Timer className="w-3 h-3 sm:w-4 sm:h-4 text-foreground" />
+                  <span className="text-xs sm:text-sm font-bold text-foreground font-mono">
                     {formatDuration(recordingTime)}
                   </span>
-                  <span className="text-xs text-muted-foreground">/ {formatDuration(settings.maxDurationSeconds)}</span>
+                  <span className="hidden sm:inline text-xs text-muted-foreground">/ {formatDuration(settings.maxDurationSeconds)}</span>
                 </div>
 
                 {/* Progress bar */}
@@ -605,8 +606,8 @@ export default function ScanPage() {
                 </div>
 
                 {/* File name */}
-                <div className="absolute bottom-4 left-4 glass px-3 py-1.5 rounded-lg">
-                  <p className="text-xs font-mono text-foreground">{receiptNumber}_unboxing.{videoExtension}</p>
+                <div className="absolute bottom-4 left-4 glass px-3 py-1.5 rounded-lg max-w-[140px] sm:max-w-none">
+                  <p className="text-xs font-mono text-foreground truncate">{receiptNumber}_unboxing.{videoExtension}</p>
                 </div>
               </div>
             )}
@@ -623,39 +624,39 @@ export default function ScanPage() {
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="text-center p-6"
+                    className="text-center p-4 sm:p-6 w-full"
                   >
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-emerald-500/30">
-                      <CheckCircle2 className="w-10 h-10 text-white" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-2xl shadow-emerald-500/30">
+                      <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                     </div>
-                    <h2 className="text-xl font-bold text-foreground mb-1">Unboxing Selesai!</h2>
-                    <p className="text-muted-foreground text-sm mb-6">Data berhasil disimpan</p>
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground mb-1">Unboxing Selesai!</h2>
+                    <p className="text-muted-foreground text-xs sm:text-sm mb-4 sm:mb-6">Data berhasil disimpan</p>
 
-                    <div className="bg-card border border-border rounded-xl p-4 mb-6 text-left space-y-2 max-w-xs mx-auto">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">No. Resi</span>
-                        <span className="font-mono font-semibold text-foreground">{receiptNumber}</span>
+                    <div className="bg-card border border-border rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 text-left space-y-2 w-full max-w-xs mx-auto">
+                      <div className="flex justify-between text-xs sm:text-sm gap-2">
+                        <span className="text-muted-foreground shrink-0">No. Resi</span>
+                        <span className="font-mono font-semibold text-foreground text-right break-all">{receiptNumber}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Foto</span>
-                        <span className="text-foreground">{receiptNumber}_resi.jpg</span>
+                      <div className="flex justify-between text-xs sm:text-sm gap-2">
+                        <span className="text-muted-foreground shrink-0">Foto</span>
+                        <span className="text-foreground text-right break-all">{receiptNumber}_resi.jpg</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Video</span>
+                      <div className="flex justify-between text-xs sm:text-sm gap-2">
+                        <span className="text-muted-foreground shrink-0">Video</span>
                         <span className="text-foreground">{formatDuration(recordingTime)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Status</span>
+                      <div className="flex justify-between text-xs sm:text-sm gap-2">
+                        <span className="text-muted-foreground shrink-0">Status</span>
                         <span className="text-amber-600 dark:text-amber-400 font-medium">Menunggu Upload</span>
                       </div>
                     </div>
 
-                    <div className="flex gap-3 justify-center">
-                      <Button size="lg" onClick={resetScan} icon={<RotateCcw className="w-5 h-5" />}>
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center w-full">
+                      <Button size="lg" onClick={resetScan} icon={<RotateCcw className="w-5 h-5" />} className="w-full sm:w-auto justify-center">
                         Scan Berikutnya
                       </Button>
-                      <Link href="/history">
-                        <Button size="lg" variant="outline">
+                      <Link href="/history" className="w-full sm:w-auto">
+                        <Button size="lg" variant="outline" className="w-full justify-center">
                           Lihat Riwayat
                         </Button>
                       </Link>

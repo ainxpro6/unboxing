@@ -235,9 +235,9 @@ export default function HistoryPage() {
       {/* Filters */}
       <motion.div variants={itemVariants}>
         <GlassCard className="!p-3">
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             {/* Search */}
-            <div className="relative flex-1">
+            <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
@@ -248,69 +248,72 @@ export default function HistoryPage() {
               />
             </div>
 
-            {/* Status Filter */}
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 text-sm bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-foreground cursor-pointer"
-              >
-                <option value="all">Semua Status</option>
-                <option value="uploaded">Terupload</option>
-                <option value="pending">Menunggu</option>
-                <option value="uploading">Mengupload</option>
-                <option value="failed">Gagal</option>
-              </select>
-            </div>
+            {/* Row 2: filters */}
+            <div className="flex items-center gap-2 flex-wrap flex-1">
+              {/* Status Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="px-3 py-2 text-sm bg-muted border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-foreground cursor-pointer"
+                >
+                  <option value="all">Semua Status</option>
+                  <option value="uploaded">Terupload</option>
+                  <option value="pending">Menunggu</option>
+                  <option value="uploading">Mengupload</option>
+                  <option value="failed">Gagal</option>
+                </select>
+              </div>
 
-            {/* Sort */}
-            <button
-              onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
-              className="p-2 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-border"
-              title={sortOrder === "desc" ? "Terbaru dulu" : "Terlama dulu"}
-            >
-              <ArrowUpDown className="w-4 h-4" />
-            </button>
-
-            {/* Select All */}
-            <button
-              onClick={handleSelectAll}
-              className={`p-2 rounded-xl border transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold ${
-                isAllSelected
-                  ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground border-border"
-              }`}
-              title={isAllSelected ? "Batal Pilih Semua" : "Pilih Semua"}
-            >
-              {isAllSelected ? <CheckSquare className="w-4 h-4 text-emerald-500" /> : <Square className="w-4 h-4" />}
-              <span className="hidden sm:inline">
-                {isAllSelected ? "Batal Semua" : "Pilih Semua"}
-              </span>
-            </button>
-
-            {/* View Mode Toggle */}
-            <div className="hidden md:flex items-center gap-1 bg-muted rounded-xl p-1">
+              {/* Sort */}
               <button
-                onClick={() => setViewMode("table")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "table"
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                className="p-2 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors border border-border"
+                title={sortOrder === "desc" ? "Terbaru dulu" : "Terlama dulu"}
               >
-                <LayoutList className="w-4 h-4" />
+                <ArrowUpDown className="w-4 h-4" />
               </button>
+
+              {/* Select All */}
               <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === "grid"
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                onClick={handleSelectAll}
+                className={`p-2 rounded-xl border transition-colors flex items-center justify-center gap-1.5 text-xs font-semibold ${
+                  isAllSelected
+                    ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground border-border"
                 }`}
+                title={isAllSelected ? "Batal Pilih Semua" : "Pilih Semua"}
               >
-                <LayoutGrid className="w-4 h-4" />
+                {isAllSelected ? <CheckSquare className="w-4 h-4 text-emerald-500" /> : <Square className="w-4 h-4" />}
+                <span className="hidden sm:inline">
+                  {isAllSelected ? "Batal Semua" : "Pilih Semua"}
+                </span>
               </button>
+
+              {/* View Mode Toggle */}
+              <div className="hidden md:flex items-center gap-1 bg-muted rounded-xl p-1 ml-auto">
+                <button
+                  onClick={() => setViewMode("table")}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === "table"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <LayoutList className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-lg transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </GlassCard>
@@ -362,7 +365,7 @@ export default function HistoryPage() {
                         selectedIds.includes(ret.id) ? "bg-emerald-500/5 hover:bg-emerald-500/10" : ""
                       }`}
                     >
-                      <td className="py-3 px-4 text-center" onClick={(e) => e.stopPropagation()}>
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-center" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={selectedIds.includes(ret.id)}
@@ -370,32 +373,32 @@ export default function HistoryPage() {
                           className="w-4 h-4 rounded border-border text-emerald-500 focus:ring-emerald-500/50 bg-muted cursor-pointer"
                         />
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4">
                         <Link
                           href={`/history/${ret.id}`}
-                          className="font-mono text-sm font-semibold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                          className="font-mono text-xs sm:text-sm font-semibold text-foreground hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors break-all"
                         >
                           {ret.receiptNumber}
                         </Link>
                       </td>
-                      <td className="py-3 px-4 hidden sm:table-cell">
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4 hidden sm:table-cell">
                         <StatusBadge status={ret.courierName} colorClass={getCourierColor(ret.courierName)} label={ret.courierName} />
                       </td>
-                      <td className="py-3 px-4 hidden md:table-cell">
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4 hidden md:table-cell">
                         <StatusBadge
                           status={ret.statusBarang}
                           colorClass={getBarangStatusColor(ret.statusBarang)}
                           label={getBarangStatusLabel(ret.statusBarang)}
                         />
                       </td>
-                      <td className="py-3 px-4 hidden lg:table-cell text-sm text-muted-foreground font-mono">
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4 hidden lg:table-cell text-sm text-muted-foreground font-mono">
                         {formatDuration(ret.media.videoDuration)}
                       </td>
-                      <td className="py-3 px-4 text-sm text-muted-foreground">
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4 text-xs sm:text-sm text-muted-foreground">
                         <span className="hidden lg:inline">{formatDateTime(ret.scannedAt)}</span>
                         <span className="lg:hidden">{getRelativeTime(ret.scannedAt)}</span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-2 sm:py-3 sm:px-4">
                         <StatusBadge
                           status={ret.media.uploadStatus}
                           colorClass={getStatusColor(ret.media.uploadStatus)}
@@ -515,34 +518,38 @@ export default function HistoryPage() {
             initial={{ y: 100, opacity: 0, x: "-50%" }}
             animate={{ y: 0, opacity: 1, x: "-50%" }}
             exit={{ y: 100, opacity: 0, x: "-50%" }}
-            className="fixed bottom-6 left-1/2 z-50 w-[90%] max-w-lg"
+            className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6 left-1/2 z-50 w-[92%] max-w-lg"
           >
-            <div className="bg-card/90 backdrop-blur-md border border-border shadow-2xl rounded-2xl p-4 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
-                <p className="text-sm font-semibold text-foreground">
-                  {selectedIds.length} item dipilih
-                </p>
-              </div>
+            <div className="bg-card/90 backdrop-blur-md border border-border shadow-2xl rounded-2xl p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4">
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
+                  <p className="text-sm font-semibold text-foreground">
+                    {selectedIds.length} item dipilih
+                  </p>
+                </div>
 
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClearSelection}
-                  disabled={isDownloading}
-                >
-                  Batal
-                </Button>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleDownloadZip}
-                  disabled={isDownloading}
-                  icon={isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                >
-                  {isDownloading ? `Mengunduh (${downloadProgress})` : "Download ZIP"}
-                </Button>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearSelection}
+                    disabled={isDownloading}
+                    className="flex-1 sm:flex-none justify-center"
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleDownloadZip}
+                    disabled={isDownloading}
+                    icon={isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                    className="flex-1 sm:flex-none justify-center"
+                  >
+                    {isDownloading ? `Mengunduh (${downloadProgress})` : "Download ZIP"}
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>

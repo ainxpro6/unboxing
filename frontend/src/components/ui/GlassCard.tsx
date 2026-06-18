@@ -20,7 +20,7 @@ export default function GlassCard({ children, className, hover = false, onClick 
       whileHover={hover ? { y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.08)" } : undefined}
       onClick={onClick}
       className={cn(
-        "bg-card border border-border rounded-2xl p-5 transition-colors duration-200",
+        "bg-card border border-border rounded-2xl p-4 sm:p-5 transition-colors duration-200",
         hover && "cursor-pointer",
         className
       )}
