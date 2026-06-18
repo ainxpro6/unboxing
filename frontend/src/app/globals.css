@@ -1,0 +1,226 @@
+@import "tailwindcss";
+
+/* ============================================
+   Unboxing Retur — Global Styles
+   Theme: Light mode default + Dark mode support
+   ============================================ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-border: var(--border-color);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-fg);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-fg);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-fg);
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-foreground: var(--sidebar-fg);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-card: var(--card-bg);
+  --color-card-foreground: var(--card-fg);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --border-color: #e2e8f0;
+  --muted: #f1f5f9;
+  --muted-fg: #64748b;
+  --primary: #10b981;
+  --primary-fg: #ffffff;
+  --accent: #3b82f6;
+  --accent-fg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-fg: #334155;
+  --sidebar-hover: #f1f5f9;
+  --card-bg: #ffffff;
+  --card-fg: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #0c0f1a;
+    --foreground: #e2e8f0;
+    --surface: #141828;
+    --surface-hover: #1e2340;
+    --border-color: #1e293b;
+    --muted: #1e293b;
+    --muted-fg: #94a3b8;
+    --primary: #34d399;
+    --primary-fg: #022c22;
+    --accent: #60a5fa;
+    --accent-fg: #172554;
+    --sidebar-bg: #111527;
+    --sidebar-fg: #94a3b8;
+    --sidebar-hover: #1e2340;
+    --card-bg: #141828;
+    --card-fg: #e2e8f0;
+  }
+}
+
+[data-theme="dark"] {
+  --background: #0c0f1a;
+  --foreground: #e2e8f0;
+  --surface: #141828;
+  --surface-hover: #1e2340;
+  --border-color: #1e293b;
+  --muted: #1e293b;
+  --muted-fg: #94a3b8;
+  --primary: #34d399;
+  --primary-fg: #022c22;
+  --accent: #60a5fa;
+  --accent-fg: #172554;
+  --sidebar-bg: #111527;
+  --sidebar-fg: #94a3b8;
+  --sidebar-hover: #1e2340;
+  --card-bg: #141828;
+  --card-fg: #e2e8f0;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================
+   Scanner Animations
+   ============================================ */
+
+@keyframes scan-line {
+  0%, 100% { top: 10%; }
+  50% { top: 85%; }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes recording-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-20px); opacity: 0; }
+}
+
+.scan-line {
+  animation: scan-line 2s ease-in-out infinite;
+}
+
+.pulse-ring {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+.recording-dot {
+  animation: recording-pulse 1s ease-in-out infinite;
+}
+
+.gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* ============================================
+   Glassmorphism
+   ============================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .glass {
+    background: rgba(20, 24, 40, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+[data-theme="dark"] .glass {
+  background: rgba(20, 24, 40, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   Custom Scrollbar (Webkit)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-fg);
+}
+
+/* ============================================
+   html5-qrcode Scanner Overrides
+   ============================================ */
+
+#barcode-scanner-container {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#barcode-scanner-container video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border: none !important;
+}
+
+#barcode-scanner-container img[alt="Info icon"] {
+  display: none !important;
+}
+
+/* Hide the built-in qr-box border and use our overlay instead */
+#qr-shaded-region {
+  border-color: rgba(16, 185, 129, 0.5) !important;
+}
+
+/* Style the scan region box */
+#barcode-scanner-container > div:first-child {
+  border: none !important;
+}
+
