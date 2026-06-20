@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSidebarStore } from "@/store/useSidebarStore";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -25,7 +26,9 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, toggleCollapsed } = useSidebarStore();
+  const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
+  const [hoveredTop, setHoveredTop] = useState<number | null>(null);
 
   return (
     <aside
@@ -36,7 +39,12 @@ export default function Sidebar() {
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 h-16 border-b border-border shrink-0">
+      <div
+        className={cn(
+          "flex items-center gap-3 h-16 border-b border-border shrink-0 transition-all duration-300",
+          collapsed ? "justify-center px-4" : "px-5"
+        )}
+      >
         <img
           src="/icon-512.png"
           alt="Logo"
@@ -61,7 +69,7 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
           const Icon = item.icon;
@@ -69,6 +77,17 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onMouseEnter={(e) => {
+                if (collapsed) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setHoveredLabel(item.label);
+                  setHoveredTop(rect.top + rect.height / 2);
+                }
+              }}
+              onMouseLeave={() => {
+                setHoveredLabel(null);
+                setHoveredTop(null);
+              }}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
                 isActive
@@ -102,11 +121,6 @@ export default function Sidebar() {
                   </motion.span>
                 )}
               </AnimatePresence>
-              {collapsed && (
-                <div className="absolute left-full ml-2 px-2 py-1 bg-foreground text-background text-xs rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
-                  {item.label}
-                </div>
-              )}
             </Link>
           );
         })}
@@ -115,12 +129,20 @@ export default function Sidebar() {
       {/* Collapse Toggle */}
       <div className="px-3 py-3 border-t border-border shrink-0">
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={toggleCollapsed}
           className="flex items-center justify-center w-full py-2 rounded-xl text-muted-foreground hover:bg-sidebar-hover hover:text-foreground transition-colors"
         >
           {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </button>
       </div>
+      {collapsed && hoveredLabel && hoveredTop !== null && (
+        <div
+          style={{ top: `${hoveredTop}px` }}
+          className="fixed left-[80px] -translate-y-1/2 px-2.5 py-1.5 bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900 text-xs font-medium rounded-lg shadow-md pointer-events-none z-50 whitespace-nowrap"
+        >
+          {hoveredLabel}
+        </div>
+      )}
     </aside>
   );
 }

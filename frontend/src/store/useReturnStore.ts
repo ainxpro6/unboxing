@@ -15,6 +15,11 @@ interface ReturnStore {
     pendingCount: number;
     successRate: number;
     weeklyStats: DailyStats[];
+    trends?: {
+      today: string;
+      total: string;
+      successRate: string;
+    };
   } | null;
   loadReturns: () => Promise<void>;
   loadStats: () => Promise<void>;
@@ -61,8 +66,11 @@ export const useReturnStore = create<ReturnStore>((set, get) => ({
               returnId: String((r.media as Record<string, unknown>).returnId),
               photoLocalPath: (r.media as Record<string, unknown>).photoLocalPath,
               photoCloudUrl: (r.media as Record<string, unknown>).photoCloudUrl,
+              photoDriveFileId: (r.media as Record<string, unknown>).photoDriveFileId,
               videoLocalPath: (r.media as Record<string, unknown>).videoLocalPath,
               videoCloudUrl: (r.media as Record<string, unknown>).videoCloudUrl,
+              videoDriveFileId: (r.media as Record<string, unknown>).videoDriveFileId,
+              driveFolderId: (r.media as Record<string, unknown>).driveFolderId,
               uploadStatus: (r.media as Record<string, unknown>).uploadStatus,
               uploadedAt: (r.media as Record<string, unknown>).uploadedAt,
               videoDuration: (r.media as Record<string, unknown>).videoDuration,
@@ -72,8 +80,11 @@ export const useReturnStore = create<ReturnStore>((set, get) => ({
               returnId: String(r.id),
               photoLocalPath: null,
               photoCloudUrl: null,
+              photoDriveFileId: null,
               videoLocalPath: null,
               videoCloudUrl: null,
+              videoDriveFileId: null,
+              driveFolderId: null,
               uploadStatus: "pending",
               uploadedAt: null,
               videoDuration: 0,
@@ -122,8 +133,11 @@ export const useReturnStore = create<ReturnStore>((set, get) => ({
           returnId: String(json.data.media.returnId),
           photoLocalPath: json.data.media.photoLocalPath,
           photoCloudUrl: json.data.media.photoCloudUrl,
+          photoDriveFileId: json.data.media.photoDriveFileId,
           videoLocalPath: json.data.media.videoLocalPath,
           videoCloudUrl: json.data.media.videoCloudUrl,
+          videoDriveFileId: json.data.media.videoDriveFileId,
+          driveFolderId: json.data.media.driveFolderId,
           uploadStatus: json.data.media.uploadStatus,
           uploadedAt: json.data.media.uploadedAt,
           videoDuration: json.data.media.videoDuration,

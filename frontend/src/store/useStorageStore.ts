@@ -6,7 +6,11 @@ import { create } from "zustand";
 import type { StorageInfo, UploadQueueItem } from "@/types";
 
 interface StorageStore {
-  storageInfo: StorageInfo;
+  storageInfo: StorageInfo & {
+    uploadingCount: number;
+    uploadedCount: number;
+    failedCount: number;
+  };
   uploadQueue: any[]; // Using any to match the API response loosely
   isConnected: boolean;
   isLoaded: boolean;
@@ -20,6 +24,9 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
     usedBytes: 0,
     totalBytes: 1, // Avoid divide by zero
     fileCount: 0,
+    uploadingCount: 0,
+    uploadedCount: 0,
+    failedCount: 0,
   },
   uploadQueue: [],
   isConnected: false,
@@ -35,6 +42,9 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
             usedBytes: data.usedSpaceBytes,
             totalBytes: data.totalSpaceBytes,
             fileCount: data.fileCount,
+            uploadingCount: data.uploadingCount || 0,
+            uploadedCount: data.uploadedCount || 0,
+            failedCount: data.failedCount || 0,
           },
           uploadQueue: data.queue,
           isConnected: data.isConnected,

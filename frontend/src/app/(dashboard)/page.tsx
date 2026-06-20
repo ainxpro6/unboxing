@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import {
   ScanLine,
   TrendingUp,
+  TrendingDown,
   CloudUpload,
   CheckCircle2,
   ArrowRight,
@@ -58,6 +59,8 @@ export default function DashboardPage() {
   const maxStat = Math.max(...dailyStats.map((s) => s.count), 1);
   const recentReturns = returns.slice(0, 8);
 
+  const trends = statsData?.trends;
+
   const statCards = [
     {
       label: "Scan Hari Ini",
@@ -65,7 +68,7 @@ export default function DashboardPage() {
       icon: ScanLine,
       color: "from-emerald-500 to-teal-600",
       shadow: "shadow-emerald-500/20",
-      trend: "+12%",
+      trend: trends?.today || null,
     },
     {
       label: "Menunggu Upload",
@@ -81,7 +84,7 @@ export default function DashboardPage() {
       icon: Package,
       color: "from-blue-500 to-indigo-600",
       shadow: "shadow-blue-500/20",
-      trend: "+8%",
+      trend: trends?.total || null,
     },
     {
       label: "Success Rate",
@@ -89,7 +92,7 @@ export default function DashboardPage() {
       icon: CheckCircle2,
       color: "from-violet-500 to-purple-600",
       shadow: "shadow-violet-500/20",
-      trend: "+3%",
+      trend: trends?.successRate || null,
     },
   ];
 
@@ -123,8 +126,20 @@ export default function DashboardPage() {
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 {stat.trend && (
-                  <span className="flex items-center gap-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
-                    <TrendingUp className="w-3 h-3" />
+                  <span
+                    className={`flex items-center gap-0.5 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      stat.trend.startsWith("-")
+                        ? "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20"
+                        : stat.trend === "0%"
+                        ? "text-muted-foreground bg-muted"
+                        : "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20"
+                    }`}
+                  >
+                    {stat.trend.startsWith("-") ? (
+                      <TrendingDown className="w-3 h-3" />
+                    ) : (
+                      <TrendingUp className="w-3 h-3" />
+                    )}
                     {stat.trend}
                   </span>
                 )}

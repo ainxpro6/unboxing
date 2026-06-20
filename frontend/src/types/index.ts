@@ -25,8 +25,11 @@ export interface MediaItem {
   returnId: string;
   photoLocalPath: string | null;
   photoCloudUrl: string | null;
+  photoDriveFileId: string | null;
   videoLocalPath: string | null;
   videoCloudUrl: string | null;
+  videoDriveFileId: string | null;
+  driveFolderId: string | null;
   uploadStatus: "pending" | "uploading" | "uploaded" | "failed";
   uploadedAt: string | null;
   videoDuration: number; // seconds

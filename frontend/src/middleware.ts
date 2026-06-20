@@ -10,10 +10,6 @@ export async function middleware(request: NextRequest) {
   // Public routes that don't require authentication
   const publicPaths = [
     "/login",
-    "/register",
-    "/signup",
-    "/forgot-password",
-    "/reset-password",
     "/api/auth",
   ];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));

@@ -72,6 +72,33 @@ export async function DELETE(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  // Get associated media to delete files from Google Drive
+  const mediaItem = await db.query.media.findFirst({
+    where: eq(media.returnId, returnId),
+  });
+
+  if (mediaItem) {
+    try {
+      const { GoogleDriveService } = await import("@/lib/google-drive");
+      const driveService = new GoogleDriveService(session.user.id);
+      await driveService.initialize();
+
+      if (mediaItem.photoDriveFileId) {
+        await driveService.deleteFile(mediaItem.photoDriveFileId).catch((err) =>
+          console.error(`[DELETE API] Gagal menghapus foto Drive ${mediaItem.photoDriveFileId}:`, err)
+        );
+      }
+
+      if (mediaItem.videoDriveFileId) {
+        await driveService.deleteFile(mediaItem.videoDriveFileId).catch((err) =>
+          console.error(`[DELETE API] Gagal menghapus video Drive ${mediaItem.videoDriveFileId}:`, err)
+        );
+      }
+    } catch (driveErr) {
+      console.error("[DELETE API] Gagal menginisialisasi GoogleDriveService:", driveErr);
+    }
+  }
+
   // Delete media first (cascade should handle this, but explicit is fine)
   await db.delete(media).where(eq(media.returnId, returnId));
   await db.delete(returns).where(eq(returns.id, returnId));

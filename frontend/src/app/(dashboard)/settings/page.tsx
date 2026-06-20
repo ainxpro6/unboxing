@@ -203,41 +203,6 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-5">
-            {/* Cloud Provider */}
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">Cloud Provider</label>
-              <div className="grid grid-cols-2 gap-3">
-                {([
-                  { value: "google_drive", label: "Google Drive", desc: "Sinkronisasi ke Google Drive", icon: "🔵" },
-                  { value: "none", label: "Tidak Ada", desc: "Simpan lokal saja", icon: "📱" },
-                ] as const).map((provider) => (
-                  <button
-                    key={provider.value}
-                    onClick={() => {
-                      updateSettings({ cloudProvider: provider.value });
-                      showSaved();
-                    }}
-                    className={`p-3 rounded-xl border-2 transition-all text-left ${
-                      settings.cloudProvider === provider.value
-                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10"
-                        : "border-border hover:border-muted-foreground/30"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <span>{provider.icon}</span>
-                      <p className="font-semibold text-foreground">{provider.label}</p>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{provider.desc}</p>
-                    {settings.cloudProvider === provider.value && (
-                      <div className="mt-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Auto Upload */}
             <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
               <div>
@@ -262,22 +227,20 @@ export default function SettingsPage() {
             </div>
 
             {/* Upload Path */}
-            {settings.cloudProvider === "google_drive" && (
-              <div>
-                <label className="text-sm font-medium text-foreground mb-2 block">Format Path Upload</label>
-                <div className="p-3 bg-muted rounded-xl font-mono text-sm text-muted-foreground">
-                  <span className="text-foreground">/UnboxingRetur</span>
-                  <span>/</span>
-                  <span className="text-blue-500">{"{{YYYY-MM}}"}</span>
-                  <span>/</span>
-                  <span className="text-emerald-500">{"{{NOMOR_RESI}}"}</span>
-                  <span>/</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Contoh: /UnboxingRetur/2026-06/NLX1928374/
-                </p>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">Format Path Upload</label>
+              <div className="p-3 bg-muted rounded-xl font-mono text-sm text-muted-foreground">
+                <span className="text-foreground">/UnboxingRetur</span>
+                <span>/</span>
+                <span className="text-blue-500">{"{{YYYY-MM}}"}</span>
+                <span>/</span>
+                <span className="text-emerald-500">{"{{NOMOR_RESI}}"}</span>
+                <span>/</span>
               </div>
-            )}
+              <p className="text-xs text-muted-foreground mt-1">
+                Contoh: /UnboxingRetur/2026-06/NLX1928374/
+              </p>
+            </div>
           </div>
         </GlassCard>
       </motion.div>

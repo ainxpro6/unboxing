@@ -15,6 +15,7 @@ import {
   Loader2,
   CheckSquare,
   Square,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import JSZip from "jszip";
@@ -23,6 +24,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import Button from "@/components/ui/Button";
 import StatusBadge from "@/components/ui/StatusBadge";
 import EmptyState from "@/components/ui/EmptyState";
+import Modal from "@/components/ui/Modal";
 import {
   formatDateTime,
   formatDuration,
@@ -47,7 +49,7 @@ const itemVariants = {
 };
 
 export default function HistoryPage() {
-  const { returns, isLoaded, loadReturns } = useReturnStore();
+  const { returns, isLoaded, loadReturns, loadStats } = useReturnStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
@@ -56,6 +58,29 @@ export default function HistoryPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+    setShowDeleteConfirm(true);
+  };
+
+  const executeBulkDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const { deleteReturn } = useReturnStore.getState();
+      await Promise.all(selectedIds.map((id) => deleteReturn(id)));
+      setSelectedIds([]);
+      setShowDeleteConfirm(false);
+      await loadStats();
+    } catch (error) {
+      console.error("Gagal menghapus beberapa item:", error);
+      alert("Terjadi kesalahan saat menghapus data.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
     loadReturns();
@@ -126,8 +151,8 @@ export default function HistoryPage() {
       let count = 0;
       const totalFiles = selectedReturns.reduce((acc, ret) => {
         let filesCount = 0;
-        if (ret.media.photoLocalPath) filesCount++;
-        if (ret.media.videoLocalPath) filesCount++;
+        if (ret.media.photoCloudUrl) filesCount++;
+        if (ret.media.videoCloudUrl) filesCount++;
         return acc + filesCount;
       }, 0);
 
@@ -139,10 +164,10 @@ export default function HistoryPage() {
 
       for (const ret of selectedReturns) {
         // Download photo if exists
-        if (ret.media.photoLocalPath) {
+        if (ret.media.photoCloudUrl && ret.media.photoDriveFileId) {
           try {
             setDownloadProgress(`${count + 1}/${totalFiles}`);
-            const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/unboxing-media/${ret.media.photoLocalPath}`;
+            const url = `https://drive.google.com/uc?export=download&id=${ret.media.photoDriveFileId}`;
             const res = await fetch(url);
             if (res.ok) {
               const blob = await res.blob();
@@ -155,10 +180,10 @@ export default function HistoryPage() {
         }
 
         // Download video if exists
-        if (ret.media.videoLocalPath) {
+        if (ret.media.videoCloudUrl && ret.media.videoDriveFileId) {
           try {
             setDownloadProgress(`${count + 1}/${totalFiles}`);
-            const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/unboxing-media/${ret.media.videoLocalPath}`;
+            const url = `https://drive.google.com/uc?export=download&id=${ret.media.videoDriveFileId}`;
             const res = await fetch(url);
             if (res.ok) {
               const blob = await res.blob();
@@ -534,16 +559,26 @@ export default function HistoryPage() {
                     variant="outline"
                     size="sm"
                     onClick={handleClearSelection}
-                    disabled={isDownloading}
+                    disabled={isDownloading || isDeleting}
                     className="flex-1 sm:flex-none justify-center"
                   >
                     Batal
                   </Button>
                   <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={handleBulkDelete}
+                    disabled={isDownloading || isDeleting}
+                    icon={isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    className="flex-1 sm:flex-none justify-center"
+                  >
+                    {isDeleting ? "Menghapus..." : "Hapus"}
+                  </Button>
+                  <Button
                     variant="primary"
                     size="sm"
                     onClick={handleDownloadZip}
-                    disabled={isDownloading}
+                    disabled={isDownloading || isDeleting}
                     icon={isDownloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                     className="flex-1 sm:flex-none justify-center"
                   >
@@ -555,6 +590,41 @@ export default function HistoryPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Custom Deletion Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteConfirm}
+        onClose={() => !isDeleting && setShowDeleteConfirm(false)}
+        title="Konfirmasi Hapus"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Apakah Anda yakin ingin menghapus <strong>{selectedIds.length} item</strong> retur terpilih?
+          </p>
+          <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl">
+            <p className="text-xs text-red-600 dark:text-red-400 font-medium">
+              ⚠️ Peringatan: Tindakan ini bersifat permanen dan juga akan menghapus file foto resi serta video unboxing terkait secara otomatis dari Google Drive Anda.
+            </p>
+          </div>
+          <div className="flex items-center justify-end gap-2.5 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={isDeleting}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="danger"
+              onClick={executeBulkDelete}
+              disabled={isDeleting}
+              icon={isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+            >
+              {isDeleting ? "Menghapus..." : "Ya, Hapus Semua"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </motion.div>
   );
 }

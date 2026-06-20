@@ -48,9 +48,8 @@ export default function ReturnDetailPage() {
   const [copied, setCopied] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
 
-  const getMediaUrl = (path: string | null) => {
-    if (!path) return "";
-    return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/unboxing-media/${path}`;
+  const getMediaUrl = (cloudUrl: string | null) => {
+    return cloudUrl || "";
   };
 
   useEffect(() => {
@@ -169,19 +168,18 @@ export default function ReturnDetailPage() {
             size="sm" 
             icon={<Download className="w-4 h-4" />}
             onClick={() => {
-              if (returnItem.media.photoLocalPath) {
+              if (returnItem.media.photoCloudUrl && returnItem.media.photoDriveFileId) {
                 const a = document.createElement("a");
-                a.href = getMediaUrl(returnItem.media.photoLocalPath);
-                a.download = returnItem.media.photoLocalPath;
+                a.href = `https://drive.google.com/uc?export=download&id=${returnItem.media.photoDriveFileId}`;
+                a.download = returnItem.media.photoLocalPath || `${returnItem.receiptNumber}_resi.jpg`;
                 a.target = "_blank";
                 a.click();
               }
-              if (returnItem.media.videoLocalPath) {
-                const videoPath = returnItem.media.videoLocalPath;
+              if (returnItem.media.videoCloudUrl && returnItem.media.videoDriveFileId) {
                 setTimeout(() => {
                   const a = document.createElement("a");
-                  a.href = getMediaUrl(videoPath);
-                  a.download = videoPath;
+                  a.href = `https://drive.google.com/uc?export=download&id=${returnItem.media.videoDriveFileId}`;
+                  a.download = returnItem.media.videoLocalPath || `${returnItem.receiptNumber}_unboxing.webm`;
                   a.target = "_blank";
                   a.click();
                 }, 100);
@@ -205,11 +203,11 @@ export default function ReturnDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Photo */}
               <div className="rounded-xl overflow-hidden border border-border bg-muted/50">
-                {returnItem.media.photoLocalPath ? (
+                {returnItem.media.photoCloudUrl ? (
                   <div className="aspect-[4/3] relative group bg-black">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={getMediaUrl(returnItem.media.photoLocalPath)}
+                      src={getMediaUrl(returnItem.media.photoCloudUrl)}
                       alt="Foto Resi"
                       className="w-full h-full object-contain"
                     />
@@ -229,10 +227,10 @@ export default function ReturnDetailPage() {
 
               {/* Video */}
               <div className="rounded-xl overflow-hidden border border-border bg-muted/50">
-                {returnItem.media.videoLocalPath ? (
+                {returnItem.media.videoCloudUrl ? (
                   <div className="aspect-[4/3] relative bg-black">
                     <video
-                      src={getMediaUrl(returnItem.media.videoLocalPath)}
+                      src={getMediaUrl(returnItem.media.videoCloudUrl)}
                       controls
                       className="w-full h-full object-contain"
                     />

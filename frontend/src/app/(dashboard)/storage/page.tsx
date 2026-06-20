@@ -50,9 +50,9 @@ export default function StoragePage() {
   }
 
   const usagePercent = (storageInfo.usedBytes / storageInfo.totalBytes) * 100;
-  const completedCount = uploadQueue.filter((q) => q.status === "completed").length;
-  const failedCount = uploadQueue.filter((q) => q.status === "failed").length;
-  const uploadingCount = uploadQueue.filter((q) => q.status === "uploading" || q.status === "queued").length;
+  const completedCount = storageInfo.uploadedCount;
+  const failedCount = storageInfo.failedCount;
+  const uploadingCount = storageInfo.uploadingCount;
 
   return (
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="max-w-4xl mx-auto space-y-6">

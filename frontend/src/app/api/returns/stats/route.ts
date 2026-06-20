@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { returns, media } from "@/db/schema";
-import { eq, and, gte, sql } from "drizzle-orm";
+import { eq, and, gte, lte, lt, sql } from "drizzle-orm";
 import { headers } from "next/headers";
 
 // GET /api/returns/stats — Get dashboard statistics
@@ -88,7 +88,7 @@ export async function GET() {
         and(
           eq(returns.userId, userId),
           gte(returns.scannedAt, dayStart),
-          sql`${returns.scannedAt} <= ${dayEnd}`
+          lte(returns.scannedAt, dayEnd)
         )
       );
 
@@ -98,11 +98,100 @@ export async function GET() {
     });
   }
 
+  // ----------------------------------------
+  // Calculate Trends
+  // ----------------------------------------
+
+  // 1. Today vs Yesterday Trend
+  const todayCountFromStats = weeklyStats[6]?.count || 0;
+  const yesterdayCountFromStats = weeklyStats[5]?.count || 0;
+  let todayTrend = "0%";
+  if (yesterdayCountFromStats > 0) {
+    const diff = ((todayCountFromStats - yesterdayCountFromStats) / yesterdayCountFromStats) * 100;
+    todayTrend = diff >= 0 ? `+${Math.round(diff)}%` : `${Math.round(diff)}%`;
+  } else if (todayCountFromStats > 0) {
+    todayTrend = "+100%";
+  }
+
+  // 2. Total Scans Trend (This Week vs Previous Week)
+  const thisWeekTotal = weeklyStats.reduce((acc, curr) => acc + curr.count, 0);
+
+  const prevWeekStart = new Date();
+  prevWeekStart.setDate(prevWeekStart.getDate() - 14);
+  prevWeekStart.setHours(0, 0, 0, 0);
+
+  const prevWeekEnd = new Date();
+  prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+  prevWeekEnd.setHours(0, 0, 0, 0);
+
+  const prevWeekResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(returns)
+    .where(
+      and(
+        eq(returns.userId, userId),
+        gte(returns.scannedAt, prevWeekStart),
+        lt(returns.scannedAt, prevWeekEnd)
+      )
+    );
+  const prevWeekTotal = Number(prevWeekResult[0]?.count || 0);
+
+  let totalTrend = "0%";
+  if (prevWeekTotal > 0) {
+    const diff = ((thisWeekTotal - prevWeekTotal) / prevWeekTotal) * 100;
+    totalTrend = diff >= 0 ? `+${Math.round(diff)}%` : `${Math.round(diff)}%`;
+  } else if (thisWeekTotal > 0) {
+    totalTrend = "+100%";
+  }
+
+  // 3. Success Rate Trend (This Week vs Previous Week)
+  const thisWeekUploadedResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(media)
+    .innerJoin(returns, eq(media.returnId, returns.id))
+    .where(
+      and(
+        eq(returns.userId, userId),
+        eq(media.uploadStatus, "uploaded"),
+        gte(returns.scannedAt, prevWeekEnd)
+      )
+    );
+  const thisWeekUploadedCount = Number(thisWeekUploadedResult[0]?.count || 0);
+  const thisWeekSuccessRate = thisWeekTotal > 0 ? (thisWeekUploadedCount / thisWeekTotal) * 100 : 0;
+
+  const prevWeekUploadedResult = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(media)
+    .innerJoin(returns, eq(media.returnId, returns.id))
+    .where(
+      and(
+        eq(returns.userId, userId),
+        eq(media.uploadStatus, "uploaded"),
+        gte(returns.scannedAt, prevWeekStart),
+        lt(returns.scannedAt, prevWeekEnd)
+      )
+    );
+  const prevWeekUploadedCount = Number(prevWeekUploadedResult[0]?.count || 0);
+  const prevWeekSuccessRate = prevWeekTotal > 0 ? (prevWeekUploadedCount / prevWeekTotal) * 100 : 0;
+
+  const diffSuccessRate = thisWeekSuccessRate - prevWeekSuccessRate;
+  let successRateTrend = "0%";
+  if (diffSuccessRate > 0) {
+    successRateTrend = `+${Math.round(diffSuccessRate)}%`;
+  } else if (diffSuccessRate < 0) {
+    successRateTrend = `${Math.round(diffSuccessRate)}%`;
+  }
+
   return NextResponse.json({
     todayCount,
     totalCount,
     pendingCount,
     successRate,
     weeklyStats,
+    trends: {
+      today: todayTrend,
+      total: totalTrend,
+      successRate: successRateTrend,
+    },
   });
 }

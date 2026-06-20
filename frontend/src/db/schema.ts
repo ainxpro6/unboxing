@@ -91,8 +91,11 @@ export const media = pgTable("media", {
     .references(() => returns.id, { onDelete: "cascade" }),
   photoLocalPath: text("photo_local_path"),
   photoCloudUrl: text("photo_cloud_url"),
+  photoDriveFileId: text("photo_drive_file_id"),
   videoLocalPath: text("video_local_path"),
   videoCloudUrl: text("video_cloud_url"),
+  videoDriveFileId: text("video_drive_file_id"),
+  driveFolderId: text("drive_folder_id"),
   uploadStatus: text("upload_status").notNull().default("pending"), // "pending" | "uploading" | "uploaded" | "failed"
   uploadedAt: timestamp("uploaded_at"),
   videoDuration: integer("video_duration").notNull().default(0), // seconds
